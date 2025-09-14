@@ -1,32 +1,18 @@
+import express from 'express';
+import cors from 'cors';
 import dotenv from 'dotenv';
-dotenv.config();
-
 import { setupServer } from './server.js';
 import { initMongoConnection } from './db/initMongoConnection.js';
 
-const PORT = process.env.PORT || 3000;
-const MONGODB_URI = process.env.MONGODB_URI;
+dotenv.config();
+const app = express();
+const PORT = 3000;
+app.use(cors());
+app.use(express.json());
 
-async function start() {
-  try {
-    if (!MONGODB_URI) {
-      console.error('❌ MONGODB_URI is missing in .env');
-      process.exit(1);
-    }
-
-    await initMongoConnection();
-    console.log('✅ MongoDB connected');
-
-    const app = setupServer();
-
-    
-    app.listen(PORT, '0.0.0.0', () => {
-      console.log(`✅ Server is running on http://localhost:${PORT}`);
-    });
-  } catch (err) {
-    console.error('❌ Startup error:', err);
-    process.exit(1);
-  }
-}
+const start = async () => {
+  await initMongoConnection();
+  setupServer();
+};
 
 start();
