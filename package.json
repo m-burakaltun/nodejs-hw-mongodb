@@ -3,12 +3,7 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
-    "import": "node src/scripts/importContacts.js",
-    "build": "npm run build-docs",
-    "build-docs": "redocly bundle --ext json -o docs/swagger.json docs/openapi.yaml",
-    "build-docs:ci": "npx -y @redocly/cli@latest bundle --ext json -o docs/swagger.json docs/openapi.yaml",
-    "preview-docs": "npx redocly preview docs/openapi.yaml",
-    "postinstall": "npm run build-docs:ci"
+    "import": "node src/scripts/importContacts.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
@@ -28,7 +23,6 @@
     "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
-    "@redocly/cli": "^2.0.8",
     "eslint": "^9.32.0",
     "eslint-plugin-react": "^7.37.5",
     "globals": "^16.3.0",
