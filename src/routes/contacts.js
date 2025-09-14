@@ -1,13 +1,13 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import Contact from '../db/Contact.js';
-import { getAllContacts, getContactById } from '../services/contacts.js';
+import { getContacts, getContactById,  } from '../services/contacts.js';
 
 const router = express.Router();
 
 // Tüm kişileri getir
 router.get('/', async (req, res) => {
-  const contacts = await getAllContacts();
+  const contacts = await getContacts();
   res.status(200).json({
     status: 200,
     message: 'Successfully found contacts',
