@@ -1,0 +1,143 @@
+openapi: 3.1.0
+info:
+  version: 1.0.0
+  title: Contacts API
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  description: >
+    Kişi yönetimi için REST API. JWT tabanlı kimlik doğrulama, sayfalama,
+    filtreleme ve favoriler içerir.
+
+tags:
+  - name: Contacts
+    description: Kişilerle ilgili uç noktalar
+  - name: Auth
+    description: Kimlik doğrulama uç noktaları
+
+servers:
+  - url: http://localhost:3000
+  - url: https://nodejs-hw-mongodb1-wt6l.onrender.com
+
+paths:
+  /contacts:
+    $ref: ../swagger/paths/contacts/index.yaml
+  /contacts/{contactId}:
+    $ref: ../swagger/paths/contacts/_contactId/index.yaml
+
+  /auth/register:
+    $ref: ../swagger/paths/auth/register.yaml
+  /auth/login:
+    $ref: ../swagger/paths/auth/login.yaml
+  /auth/refresh:
+    $ref: ../swagger/paths/auth/refresh.yaml
+  /auth/logout:
+    $ref: ../swagger/paths/auth/logout.yaml
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Contact:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: '68ab4c0aaa4f8455f8c4139c'
+        name:
+          type: string
+          example: 'Nur'
+        phoneNumber:
+          type: string
+          example: '555-123-4567'
+        email:
+          type: string
+          example: 'nur@example.com'
+        isFavourite:
+          type: boolean
+          example: false
+        contactType:
+          type: string
+          enum: [work, home, personal]
+          example: 'work'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ContactResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 200
+        message:
+          type: string
+          example: 'Successfully found contact'
+        data:
+          $ref: '#/components/schemas/Contact'
+
+    ContactsList:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 200
+        message:
+          type: string
+          example: 'Successfully found contacts'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Contact'
+
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 404
+        message:
+          type: string
+          example: 'Route not found'
+        data:
+          type: string
+          example: 'Stack or details...'
+
+    ContactInput:
+      type: object
+      required: [name, phoneNumber]
+      properties:
+        name:
+          type: string
+          example: 'Ali Veli'
+        phoneNumber:
+          type: string
+          example: '555-000-0000'
+        email:
+          type: string
+          example: 'ali@example.com'
+        isFavourite:
+          type: boolean
+          example: false
+        contactType:
+          type: string
+          enum: [work, home, personal]
+          example: 'work'
+
+    ContactUpdate:
+      type: object
+      properties:
+        name: { type: string }
+        phoneNumber: { type: string }
+        email: { type: string }
+        isFavourite: { type: boolean }
+        contactType:
+          type: string
+          enum: [work, home, personal]

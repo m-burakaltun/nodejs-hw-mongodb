@@ -1,0 +1,21 @@
+post:
+  tags: [Auth]
+  summary: Access token yenile
+  operationId: refresh
+  description: Refresh token ile yeni access token üretir. (Cookie veya body ile gönderilebilir.)
+  requestBody:
+    required: false
+  responses:
+    '200':
+      description: Başarılı
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status: { type: integer, example: 200 }
+              message: { type: string, example: "Refreshed" }
+              data:
+                type: object
+                properties:
+                  accessToken: { type: string, example: "eyJhbGciOiJI..." }

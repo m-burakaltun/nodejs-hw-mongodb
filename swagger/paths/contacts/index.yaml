@@ -1,0 +1,84 @@
+get:
+  tags: [Contacts]
+  summary: Kişi listesini getir
+  operationId: getContacts
+  description: Kişileri sayfalama, filtre ve sıralama ile döndürür.
+  security:
+    - bearerAuth: []
+  parameters:
+    - in: query
+      name: page
+      schema: { type: integer, minimum: 1, default: 1 }
+      description: Sayfa numarası
+    - in: query
+      name: limit
+      schema: { type: integer, minimum: 1, maximum: 100, default: 10 }
+      description: Sayfa başına kayıt
+    - in: query
+      name: isFavourite
+      schema: { type: boolean }
+    - in: query
+      name: contactType
+      schema: { type: string, enum: [work, home, personal] }
+    - in: query
+      name: search
+      schema: { type: string }
+      description: Ada/e-postaya göre arama
+    - in: query
+      name: sortBy
+      schema: { type: string, enum: [createdAt, updatedAt, name] }
+    - in: query
+      name: sortOrder
+      schema: { type: string, enum: [asc, desc], default: desc }
+  responses:
+    '200':
+      description: Başarılı
+      content:
+        application/json:
+          schema:
+            $ref: '../../../docs/openapi.yaml#/components/schemas/ContactsList'
+    '401':
+      description: Yetkisiz
+      content:
+        application/json:
+          schema:
+            $ref: '../../../docs/openapi.yaml#/components/schemas/ErrorResponse'
+
+post:
+  tags: [Contacts]
+  summary: Yeni kişi oluştur
+  operationId: createContact
+  description: Yeni bir kişi ekler.
+  security:
+    - bearerAuth: []
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../../docs/openapi.yaml#/components/schemas/ContactInput'
+  responses:
+    '201':
+      description: Oluşturuldu
+      content:
+        application/json:
+          schema:
+            $ref: '../../../docs/openapi.yaml#/components/schemas/ContactResponse'
+    '400':
+      description: Geçersiz istek
+      content:
+        application/json:
+          schema:
+            $ref: '../../../docs/openapi.yaml#/components/schemas/ErrorResponse'
+    '401':
+      description: Yetkisiz
+      content:
+        application/json:
+          schema:
+            $ref: '../../../docs/openapi.yaml#/components/schemas/ErrorResponse'
+    '409':
+      description: Zaten var (email/telefon)
+      content:
+        application/json:
+          schema:
+            $ref: '../../../docs/openapi.yaml#/components/schemas/ErrorResponse'

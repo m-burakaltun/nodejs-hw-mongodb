@@ -1,0 +1,23 @@
+[
+  {
+    "name": "Alice Johnson",
+    "phoneNumber": "555-123-4567",
+    "email": "alice@example.com",
+    "isFavourite": true,
+    "contactType": "work"
+  },
+  {
+    "name": "Bob Smith",
+    "phoneNumber": "555-987-6543",
+    "email": "bob@example.com",
+    "isFavourite": false,
+    "contactType": "home"
+  },
+  {
+    "name": "Charlie Brown",
+    "phoneNumber": "555-000-1122",
+    "email": "charlie@example.com",
+    "isFavourite": false,
+    "contactType": "personal"
+  }
+]
