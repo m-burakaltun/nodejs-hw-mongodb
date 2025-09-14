@@ -1,53 +1,122 @@
-import { Router } from 'express';
-import { ctrlWrapper } from '../utils/ctrlWrapper.js';
-import { authenticate } from '../middlewares/authenticate.js';
-import { upload } from '../middlewares/upload.js';
+import express from 'express';
+import mongoose from 'mongoose';
+import Contact from '../db/Contact.js';
+import { getContacts, getContactById,  } from '../services/contacts.js';
 
-import {
-  getAll,
-  getById,
-  createOne,
-  patchOne,
-  removeOne,
-} from '../controllers/contacts.js';
+const router = express.Router();
 
-import { isValidId } from '../middlewares/isValidId.js';
-import { validateBody } from '../middlewares/validateBody.js';
-import {
-  createContactSchema,
-  updateContactSchema,
-} from '../validation/contactsSchemas.js';
-
-const router = Router();
-router.get('/_debug', (_req, res) => {
-  res.json({ ok: true, where: 'auth router mounted' });
+// Tüm kişileri getir
+router.get('/', async (req, res) => {
+  const contacts = await getContacts();
+  res.status(200).json({
+    status: 200,
+    message: 'Successfully found contacts',
+    data: contacts,
+  });
 });
-// Tüm contact rotalarını koruma altına al
-router.use(authenticate);
 
-router.get('/', ctrlWrapper(getAll));
+// ID'ye göre kişi getir
+router.get('/:contactId', async (req, res) => {
+  const { contactId } = req.params;
 
-// ID ile getir
-router.get('/:contactId', isValidId, ctrlWrapper(getById));
+  // ✅ ObjectId geçerli mi kontrolü
+  if (!mongoose.Types.ObjectId.isValid(contactId)) {
+    return res.status(400).json({ message: 'Invalid contact ID format' });
+  }
 
-// Oluştur
-router.post(
-  '/',
-  upload.single('photo'),
-  validateBody(createContactSchema),
-  ctrlWrapper(createOne)
-);
+  const contact = await getContactById(contactId);
 
-// Güncelle (partial)
-router.patch(
-  '/:contactId',
-  isValidId,
-  upload.single('photo'),
-  validateBody(updateContactSchema),
-  ctrlWrapper(patchOne)
-);
+  if (!contact) {
+    return res.status(404).json({ message: 'Contact not found' });
+  }
 
-// Sil
-router.delete('/:contactId', isValidId, ctrlWrapper(removeOne));
+  res.status(200).json({
+    status: 200,
+    message: `Successfully found contact with id ${contactId}!`,
+    data: contact,
+  });
+});
+router.post('/', async (req, res) => {
+  try {
+    const { name, phoneNumber, email, isFavourite, contactType } = req.body;
+
+    if (!name || !phoneNumber) {
+      return res
+        .status(400)
+        .json({ message: 'Name and phone number are required.' });
+    }
+
+    const newContact = await Contact.create({
+      name,
+      phoneNumber,
+      email,
+      isFavourite,
+      contactType,
+    });
+
+    res.status(201).json({
+      status: 201,
+      message: 'Contact created successfully',
+      data: newContact,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: error.message });
+  }
+});
+
+router.put('/:contactId', async (req, res) => {
+  const { contactId } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(contactId)) {
+    return res.status(400).json({ message: 'Invalid contact ID format' });
+  }
+
+  try {
+    const updatedContact = await Contact.findByIdAndUpdate(
+      contactId,
+      req.body,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    if (!updatedContact) {
+      return res.status(404).json({ message: 'Contact not found' });
+    }
+
+    res.status(200).json({
+      status: 200,
+      message: 'Contact updated successfully!',
+      data: updatedContact,
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error while updating contact.' });
+  }
+});
+
+router.delete('/:contactId', async (req, res) => {
+  const { contactId } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(contactId)) {
+    return res.status(400).json({ message: 'Invalid contact ID format' });
+  }
+
+  try {
+    const deletedContact = await Contact.findByIdAndDelete(contactId);
+
+    if (!deletedContact) {
+      return res.status(404).json({ message: 'Contact not found' });
+    }
+
+    res.status(200).json({
+      status: 200,
+      message: 'Contact deleted successfully!',
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error while deleting contact.' });
+  }
+});
 
 export default router;

@@ -1,10 +1,10 @@
-import mongoose, { Schema } from 'mongoose';
+import mongoose from 'mongoose';
 
-const contactSchema = new Schema(
+const contactSchema = new mongoose.Schema(
   {
-    name: { type: String, required: true, trim: true },
-    phoneNumber: { type: String, required: true, trim: true },
-    email: { type: String, trim: true, lowercase: true },
+    name: { type: String, required: true },
+    phoneNumber: { type: String, required: true },
+    email: { type: String },
     isFavourite: { type: Boolean, default: false },
     contactType: {
       type: String,
@@ -12,18 +12,9 @@ const contactSchema = new Schema(
       default: 'personal',
       required: true,
     },
-
-    photo: { type: String },
-
-    userId: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
-      required: true,
-      index: true,
-    },
   },
-  { timestamps: true, versionKey: false }
+  { timestamps: true }
 );
 
-const Contact = mongoose.model('Contact', contactSchema, 'contacts');
+const Contact = mongoose.model('Contact', contactSchema);
 export default Contact;
