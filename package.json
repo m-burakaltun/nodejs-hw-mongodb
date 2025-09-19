@@ -1,8 +1,8 @@
 {
   "type": "module",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
     "import": "node src/scripts/importContacts.js"
   },
   "dependencies": {

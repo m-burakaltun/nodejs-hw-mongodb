@@ -4,11 +4,11 @@ import morgan from 'morgan';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 
-import contactsRouter from './src/routes/contacts.js';
-import authRouter from './src/routes/auth.js';
+import contactsRouter from './routes/contacts.js';
+import authRouter from './routes/auth.js';
 
-import { notFoundHandler } from './src/middlewares/notFoundHandler.js';
-import { errorHandler } from './src/middlewares/errorHandler.js';
+import { notFoundHandler } from './middlewares/notFoundHandler.js';
+import { errorHandler } from './middlewares/errorHandler.js';
 
 dotenv.config();
 
