@@ -4,18 +4,15 @@ export const getContacts = (filter = {}, options = {}) => {
   const { skip, limit, sort, countOnly = false } = options;
 
   if (countOnly) {
-    // Sadece toplam kayıt sayısı
     return Contact.countDocuments(filter);
   }
 
   const query = Contact.find(filter);
 
-  // Sıralama
   if (sort && typeof sort === 'object') {
     query.sort(sort);
   }
 
-  // Sayfalandırma
   if (Number.isInteger(skip) && skip >= 0) {
     query.skip(skip);
   }
@@ -26,14 +23,16 @@ export const getContacts = (filter = {}, options = {}) => {
   return query.exec();
 };
 
-export const getContactById = (id) => Contact.findById(id);
+export const getContactById = (id, userId) =>
+  Contact.findOne({ _id: id, userId }); // 👈 sadece kendi contact
 
 export const createContact = (payload) => Contact.create(payload);
 
-export const updateContact = (id, payload) =>
-  Contact.findByIdAndUpdate(id, payload, {
+export const updateContact = (id, payload, userId) =>
+  Contact.findOneAndUpdate({ _id: id, userId }, payload, {
     new: true,
     runValidators: true,
   });
 
-export const deleteContact = (id) => Contact.findByIdAndDelete(id);
+export const deleteContact = (id, userId) =>
+  Contact.findOneAndDelete({ _id: id, userId });
