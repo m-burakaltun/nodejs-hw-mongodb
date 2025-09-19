@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { ctrlWrapper } from '../utils/ctrlWrapper.js';
 import { authenticate } from '../middlewares/authenticate.js';
+import { upload } from '../middlewares/upload.js';
 
 import {
   getAll,
@@ -18,7 +19,9 @@ import {
 } from '../validation/contactsSchemas.js';
 
 const router = Router();
-
+router.get('/_debug', (_req, res) => {
+  res.json({ ok: true, where: 'auth router mounted' });
+});
 // Tüm contact rotalarını koruma altına al
 router.use(authenticate);
 
@@ -28,12 +31,18 @@ router.get('/', ctrlWrapper(getAll));
 router.get('/:contactId', isValidId, ctrlWrapper(getById));
 
 // Oluştur
-router.post('/', validateBody(createContactSchema), ctrlWrapper(createOne));
+router.post(
+  '/',
+  upload.single('photo'),
+  validateBody(createContactSchema),
+  ctrlWrapper(createOne)
+);
 
 // Güncelle (partial)
 router.patch(
   '/:contactId',
   isValidId,
+  upload.single('photo'),
   validateBody(updateContactSchema),
   ctrlWrapper(patchOne)
 );
