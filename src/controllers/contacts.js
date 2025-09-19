@@ -6,6 +6,7 @@ import {
   updateContact,
   deleteContact,
 } from '../services/contacts.js';
+import cloudinary from '../services/cloudinary.js';
 
 export const getAll = async (req, res) => {
   const {
@@ -31,7 +32,7 @@ export const getAll = async (req, res) => {
   const sortDirection = sortOrder === 'desc' ? -1 : 1;
 
   // Filtreleri hazırla
-  const filter = { userId: req.user._id }; 
+  const filter = { userId: req.user._id };
   if (type) filter.contactType = type;
   if (typeof isFavourite !== 'undefined') {
     filter.isFavourite = String(isFavourite).toLowerCase() === 'true';
@@ -64,7 +65,7 @@ export const getAll = async (req, res) => {
 
 export const getById = async (req, res) => {
   const { contactId } = req.params;
-  const doc = await getContactById(contactId, req.user._id); 
+  const doc = await getContactById(contactId, req.user._id);
   if (!doc) throw createError(404, 'Contact not found');
   res.json({ status: 200, message: 'OK', data: doc });
 };
@@ -75,13 +76,29 @@ export const createOne = async (req, res) => {
     throw createError(400, 'name and phoneNumber are required');
   }
 
+  let photoUrl;
+  if (req.file) {
+    const uploadResult = await new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        { folder: 'contacts' },
+        (error, result) => {
+          if (error) return reject(createError(500, 'Photo upload failed'));
+          resolve(result);
+        }
+      );
+      stream.end(req.file.buffer);
+    });
+    photoUrl = uploadResult.secure_url;
+  }
+
   const created = await createContact({
     name,
     phoneNumber,
     email,
     isFavourite,
     contactType,
-    userId: req.user._id, 
+    userId: req.user._id,
+    photo: photoUrl,
   });
 
   res.status(201).json({
@@ -91,14 +108,33 @@ export const createOne = async (req, res) => {
   });
 };
 
+
 export const patchOne = async (req, res) => {
   const { contactId } = req.params;
 
-  if (!Object.keys(req.body).length) {
+  if (!Object.keys(req.body).length && !req.file) {
     throw createError(400, 'Missing fields for update');
   }
 
-  const updated = await updateContact(contactId, req.body, req.user._id); 
+  let photoUrl;
+  if (req.file) {
+    const uploadResult = await new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        { folder: 'contacts' },
+        (error, result) => {
+          if (error) return reject(createError(500, 'Photo upload failed'));
+          resolve(result);
+        }
+      );
+      stream.end(req.file.buffer);
+    });
+    photoUrl = uploadResult.secure_url;
+  }
+
+  const updateData = { ...req.body };
+  if (photoUrl) updateData.photo = photoUrl;
+
+  const updated = await updateContact(contactId, updateData, req.user._id);
 
   if (!updated) {
     throw createError(404, 'Contact not found');
@@ -111,9 +147,10 @@ export const patchOne = async (req, res) => {
   });
 };
 
+
 export const removeOne = async (req, res) => {
   const { contactId } = req.params;
-  const deleted = await deleteContact(contactId, req.user._id); 
+  const deleted = await deleteContact(contactId, req.user._id);
   if (!deleted) throw createError(404, 'Contact not found');
 
   return res.json({
