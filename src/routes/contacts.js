@@ -1,36 +1,40 @@
 import { Router } from 'express';
-import mongoose from 'mongoose';
-import createError from 'http-errors';
-
 import { ctrlWrapper } from '../utils/ctrlWrapper.js';
+
 import {
-  getAll, 
-  getById, 
-  createOne, 
+  getAll,
+  getById,
+  createOne,
   patchOne,
   removeOne,
 } from '../controllers/contacts.js';
 
+import { isValidId } from '../middlewares/isValidId.js';
+import { validateBody } from '../middlewares/validateBody.js';
+import {
+  createContactSchema,
+  updateContactSchema,
+} from '../validation/contactsSchemas.js';
+
 const router = Router();
 
-
-router.param('contactId', (req, res, next, id) => {
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return next(createError(400, 'Invalid contact ID format'));
-  }
-  next();
-});
-
-
 router.get('/', ctrlWrapper(getAll));
-router.get('/:contactId', ctrlWrapper(getById));
 
-router.post('/', ctrlWrapper(createOne));
+// ID ile getir
+router.get('/:contactId', isValidId, ctrlWrapper(getById));
 
+// Oluştur
+router.post('/', validateBody(createContactSchema), ctrlWrapper(createOne));
 
-router.patch('/:contactId', ctrlWrapper(patchOne));
+// Güncelle (partial)
+router.patch(
+  '/:contactId',
+  isValidId,
+  validateBody(updateContactSchema),
+  ctrlWrapper(patchOne)
+);
 
-
-router.delete('/:contactId', ctrlWrapper(removeOne));
+// Sil
+router.delete('/:contactId', isValidId, ctrlWrapper(removeOne));
 
 export default router;
