@@ -18,7 +18,6 @@ async function start() {
     console.log('✅ MongoDB connected');
 
     const app = setupServer();
-    app.get('/health', (_req, res) => res.json({ ok: true }));
 
     app.listen(PORT, '0.0.0.0', () => {
       console.log(`✅ Server is running on http://localhost:${PORT}`);

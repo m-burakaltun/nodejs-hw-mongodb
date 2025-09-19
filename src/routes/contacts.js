@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { ctrlWrapper } from '../utils/ctrlWrapper.js';
+import { authenticate } from '../middlewares/authenticate.js';
 
 import {
   getAll,
@@ -17,6 +18,9 @@ import {
 } from '../validation/contactsSchemas.js';
 
 const router = Router();
+
+// Tüm contact rotalarını koruma altına al
+router.use(authenticate);
 
 router.get('/', ctrlWrapper(getAll));
 
