@@ -2,13 +2,15 @@ import * as authService from '../services/auth.js';
 
 
 const pickRefreshToken = (req) => {
-  
+  // 1) cookie-parser ile gelen
   if (req.cookies?.refreshToken) return req.cookies.refreshToken;
 
+  // 2) Header içindeki "Cookie: refreshToken=..." formatı
   const raw = req.headers?.cookie || '';
   const m = raw.match(/(?:^|;\s*)refreshToken=([^;]+)/);
   if (m) return decodeURIComponent(m[1]);
 
+  // 3) Body ile gönderilmiş olabilir (test kolaylığı)
   if (req.body?.refreshToken) return req.body.refreshToken;
 
   return null;
