@@ -7,7 +7,6 @@
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
-    "cloudinary": "^2.7.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",
@@ -15,12 +14,8 @@
     "http-errors": "^2.0.0",
     "joi": "^18.0.1",
     "jsonwebtoken": "^9.0.2",
-    "mongodb": "^6.19.0",
     "mongoose": "^8.17.1",
-    "morgan": "^1.10.1",
-    "multer": "^2.0.2",
-    "nodemailer": "^7.0.6",
-    "swagger-ui-express": "^5.0.1"
+    "morgan": "^1.10.1"
   },
   "devDependencies": {
     "eslint": "^9.32.0",
@@ -28,20 +23,5 @@
     "globals": "^16.3.0",
     "nodemon": "^3.1.10",
     "prettier": "^3.6.2"
-  },
-  "name": "nodejs-hw-mongodb",
-  "version": "1.0.0",
-  "main": "index.js",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/m-burakaltun/nodejs-hw-mongodb.git"
-  },
-  "keywords": [],
-  "author": "Burak ALTUN <altunburak88@gmail.com>",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/m-burakaltun/nodejs-hw-mongodb/issues"
-  },
-  "homepage": "https://github.com/m-burakaltun/nodejs-hw-mongodb#readme",
-  "description": ""
+  }
 }
